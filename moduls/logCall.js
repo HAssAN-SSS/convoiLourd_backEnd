@@ -1,6 +1,6 @@
 let mysql = require('mysql2')
 
-function DataCall(reqBody,res){
+function logCall(reqBody,res){
     dbConnection = mysql.createConnection({
         user:'newuser',
         password:'password',
@@ -15,4 +15,4 @@ function DataCall(reqBody,res){
    
 }
 
-module.exports = DataCall
+module.exports = logCall

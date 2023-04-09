@@ -1,8 +1,7 @@
 let mysql = require('mysql2')
-let logCall = require('./logCall')
-module.exports = Login
+let todoCall = require('./todoCall')
 
-function Login(req,res){
+function todo(req,res){
 
     let reqBody = ''
     
@@ -18,7 +17,7 @@ function Login(req,res){
 
         if (reqBody && reqBody.name_user !== '' && reqBody.pass_user !== ''){
 
-            logCall(reqBody,res)
+           todoCall(reqBody,res)
 
         }else{
 
@@ -26,3 +25,4 @@ function Login(req,res){
         
     })
 }
+module.exports = todo
