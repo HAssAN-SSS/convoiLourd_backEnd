@@ -1,7 +1,6 @@
 let mysql = require('mysql2')
-let todoCall = require('./todoCall')
-
-function todo(req,res){
+let demandeCall = require('./demandeCall')
+function demande(req,res){
 
     let reqBody = ''
     
@@ -10,11 +9,14 @@ function todo(req,res){
     })
     req.on('end',() => {
 
+        console.log('reqBody : '+reqBody)
+        
         reqBody = JSON.parse(reqBody) 
+        console.log('typof reqBody : '+typeof reqBody)
 
         if (reqBody){
 
-           todoCall(reqBody,res)
+           demandeCall(reqBody,res)
 
         }else{
 
@@ -22,4 +24,4 @@ function todo(req,res){
         
     })
 }
-module.exports = todo
+module.exports = demande
