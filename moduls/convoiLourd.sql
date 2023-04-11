@@ -354,9 +354,10 @@ CALL to_do('2','tme');
 
 
 DROP PROCEDURE IF EXISTS demande;
-CREATE PROCEDURE demande(in id int)
+CREATE PROCEDURE demande(in id int, in idUser int)
 BEGIN
-    SELECT demande.id_demande,date_demande,date_operation,operation,fichier,point_sortie,itineraire.id_iti,capacite,largeure,geometry_iti,flux FROM demande
+
+    SELECT itineraire.id_iti,capacite,largeure,geometry_iti,flux FROM demande
     JOIN itineraire
     ON itineraire.id_demande = demande.id_demande
     WHERE demande.id_demande = id;
@@ -365,9 +366,16 @@ BEGIN
     JOIN vehicule
     ON vehicule.id_demande = demande.id_demande
     WHERE demande.id_demande = id;
+
+    SELECT demande.id_demande,date_demande,date_operation,point_sortie,operation,fichier,name_user,lname_user,societe_user,tel_user,email_user,role,etap FROM demande
+    JOIN process
+    ON process.id_demande = demande.id_demande
+    JOIN user 
+    ON user.id_user = process.id_user
+    WHERE demande.id_demande = id AND user.id_user = idUser;
 END
 
-CALL demande(2);
+CALL demande('2','2');
 
 
 
