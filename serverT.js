@@ -3,6 +3,8 @@ let mysql = require('mysql2')
 let Login = require('./moduls/login')
 let todo = require('./moduls/todo')
 let demande = require('./moduls/demande')
+let refused = require('./moduls/refused')
+let done = require('./moduls/done')
 let serrver = http.createServer((req,res) => {
     if(req.url === '/login') {
        userIn = Login(req,res)
@@ -14,7 +16,7 @@ let serrver = http.createServer((req,res) => {
        })
     //    res.end(JSON.stringify({name:'lola'}))
     }
-    else if (req.url === '/todo') {
+    else if (req.url === '/To_Do') {
         userIn = todo(req,res)
        console.log(userIn)
        res.writeHead(200,{
@@ -25,6 +27,24 @@ let serrver = http.createServer((req,res) => {
     }
     else if (req.url === '/demande') {
         userIn = demande(req,res)
+       console.log(userIn)
+       res.writeHead(200,{
+        'Content-Type':'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Methods': 'POST, GET, DELETE, PUT, OPTION '
+       })
+    }
+    else if (req.url === '/Refused') {
+        userIn = refused(req,res)
+       console.log(userIn)
+       res.writeHead(200,{
+        'Content-Type':'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Methods': 'POST, GET, DELETE, PUT, OPTION '
+       })
+    }
+    else if (req.url === '/Done') {
+        userIn = done(req,res)
        console.log(userIn)
        res.writeHead(200,{
         'Content-Type':'application/json',

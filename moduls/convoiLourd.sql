@@ -108,7 +108,7 @@ BEGIN
             SELECT COUNT(*) AS etapa,demande.id_demande, date_demande, date_operation, operation 
             FROM demande
             JOIN process ON process.id_demande = demande.id_demande
-            WHERE type_process = 'regester' AND 
+            WHERE type_process = 'register' AND 
             GROUP BY demande.id_demande;
 
 
@@ -142,7 +142,7 @@ CALL todo('2','tme');
 SELECT demande.id_demande,date_demande,date_operation,operation FROM demande
 JOIN process
 ON process.id_demande = demande.id_demande
-WHERE type_process = 'regester';
+WHERE type_process = 'register';
 
 
 
@@ -150,7 +150,7 @@ WHERE type_process = 'regester';
 SELECT demande.id_demande,id_process,date_process FROM demande
 JOIN process
 ON demande.id_demande = process.id_demande
-WHERE type_process = 'regester'
+WHERE type_process = 'register'
 ORDER BY date_process  DESC;
 
 
@@ -166,7 +166,7 @@ BEGIN
     IF role = 'client' THEN SELECT demande.id_demande,date_demande,date_operation,operation FROM demande
                             JOIN process
                             ON process.id_demande = demande.id_demande
-                            WHERE type_process = 'regester';
+                            WHERE type_process = 'register';
 
     ELSEIF role = 'tme' THEN SELECT demande.id_demande,date_demande,date_operation,operation FROM demande
                             JOIN process
@@ -245,20 +245,20 @@ BEGIN
                                     ON process.id_user = user.id_user
                                     JOIN demande
                                     ON demande.id_demande = process.id_demande
-                                    WHERE dmd = demande.id_demande) AS client_name,
+                                    WHERE (dmd = demande.id_demande) AND id = user.id_user) AS client_name,
 
                                     (SELECT societe_user AS societe from `user`
                                     JOIN process
                                     ON process.id_user = user.id_user
                                     JOIN demande
                                     ON demande.id_demande = process.id_demande
-                                    WHERE dmd = demande.id_demande) AS 'societe_client',date_demande,date_operation,operation,point_sortie
+                                    WHERE (dmd = demande.id_demande) AND id = user.id_user) AS 'societe_client',date_demande,date_operation,operation,point_sortie
 
 
                                     
                                     
                                     FROM demande
-                                    WHERE etap = 'regester';
+                                    WHERE etap = 'register';
     ELSEIF role = 'capt' 
         THEN SELECT id_demande AS dmd,(SELECT name_user AS client from `user`
                                     JOIN process
@@ -375,8 +375,180 @@ BEGIN
     WHERE demande.id_demande = id AND user.id_user = idUser;
 END
 
-CALL demande('2','2');
+CALL demande('4','2');
 
 
 
 
+
+
+
+SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+JOIN process
+ON process.id_demande = demande.id_demande
+JOIN user
+ON user.id_user = process.id_user
+WHERE type_process = 'refuse' AND user.id_user = 2;
+
+
+DROP PROCEDURE IF EXISTS refuse;
+CREATE PROCEDURE refuse(in iduser VARCHAR(100))
+BEGIN
+    SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+    JOIN process
+    ON process.id_demande = demande.id_demande
+    JOIN user
+    ON user.id_user = process.id_user
+    WHERE type_process = 'refuse' AND user.id_user = iduser;
+END
+
+call refuse('2')
+
+
+
+SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+    JOIN process
+    ON process.id_demande = demande.id_demande
+    JOIN user
+    ON user.id_user = process.id_user
+    WHERE etap = 'register' AND type_process = 'register' ;
+
+
+
+DROP PROCEDURE IF EXISTS to_do;
+CREATE PROCEDURE to_do(IN id varchar(100),IN role VARCHAR(15))
+BEGIN
+    IF role = 'tme'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE etap = 'register' AND type_process = 'register' ;
+
+    ELSEIF role = 'capt'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE etap = 'v-tme' AND type_process = 'register' ;
+
+    ELSEIF role = 'd_tech'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE etap = 'v-capt' AND type_process = 'register' ;
+
+    ELSEIF role = 'exploi'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE etap = 'v-d_tech' AND type_process = 'register' ;
+    
+    ELSEIF role = 'terr'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE etap = 'v-exploi' AND type_process = 'register' ;
+
+    END IF;
+    END
+
+   CALL to_do('2','tme')
+
+
+
+
+
+
+
+--!------------------------------------Done----------------------------------
+
+DROP PROCEDURE IF EXISTS refuse;
+CREATE PROCEDURE refuse(in iduser VARCHAR(100))
+BEGIN
+    SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+    JOIN process
+    ON process.id_demande = demande.id_demande
+    JOIN user
+    ON user.id_user = process.id_user
+    WHERE type_process = 'refuse' AND user.id_user = iduser;
+END
+
+call refuse('1')
+
+
+
+SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+    JOIN process
+    ON process.id_demande = demande.id_demande
+    JOIN user
+    ON user.id_user = process.id_user
+    WHERE etap = 'register' AND type_process = 'register' ;
+
+
+
+DROP PROCEDURE IF EXISTS Done;
+CREATE PROCEDURE Done(IN id varchar(100),IN role VARCHAR(15))
+BEGIN
+    IF role = 'tme'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE user.id_user  = id AND type_process = 'v-tme' ;
+
+    ELSEIF role = 'capt'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE user.id_user  = id AND type_process = 'v-capt' ;
+
+    ELSEIF role = 'd_tech'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE user.id_user  = id AND type_process = 'v-d_tech' ;
+
+    ELSEIF role = 'exploi'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE user.id_user  = id AND type_process = 'v-exploi' ;
+    
+    ELSEIF role = 'terr'
+    THEN
+        SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
+        JOIN process
+        ON process.id_demande = demande.id_demande
+        JOIN user
+        ON user.id_user = process.id_user
+        WHERE user.id_user  = id AND type_process = 'v-terr' ;
+
+    END IF;
+    END
+
+CALL Done('2','tme')
