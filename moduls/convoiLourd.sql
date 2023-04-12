@@ -389,10 +389,10 @@ ON process.id_demande = demande.id_demande
 JOIN user
 ON user.id_user = process.id_user
 WHERE type_process = 'refuse' AND user.id_user = 2;
+--!---------------------------------------------------resfused--------------------------------
 
-
-DROP PROCEDURE IF EXISTS refuse;
-CREATE PROCEDURE refuse(in iduser VARCHAR(100))
+DROP PROCEDURE IF EXISTS refused;
+CREATE PROCEDURE refused(in iduser VARCHAR(100))
 BEGIN
     SELECT demande.id_demande,name_user,lname_user,societe_user,date_demande,operation,date_operation FROM demande
     JOIN process
@@ -402,7 +402,7 @@ BEGIN
     WHERE type_process = 'refuse' AND user.id_user = iduser;
 END
 
-call refuse('2')
+call refused('2')
 
 
 
@@ -552,3 +552,122 @@ BEGIN
     END
 
 CALL Done('2','tme')
+
+-- ?==================================================validate===================================
+ 
+DROP PROCEDURE IF EXISTS validate;
+CREATE PROCEDURE validate(IN idUser VARCHAR(100),IN idDemande VARCHAR(100),IN userRole VARCHAR(20))
+BEGIN
+    DECLARE pretandetRole VARCHAR(20);
+
+    SELECT role INTO pretandetRole FROM user
+    WHERE id_user = idUser;
+
+    IF pretandetRole = userRole
+
+        THEN 
+            IF pretandetRole = 'tme'
+                THEN UPDATE demande SET etap = 'v-tme'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('v-tme',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'capt'
+                THEN UPDATE demande SET etap = 'v-capt'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('v-capt',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'd_tech'
+                THEN UPDATE demande SET etap = 'v-d_tech'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('v-d_tech',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'exploi'
+                THEN UPDATE demande SET etap = 'v-exploi'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('v-exploi',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'terr'
+                THEN UPDATE demande SET etap = 'cloture'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('cloture',idUser,idDemande);
+            END IF;
+        
+        SELECT 'valido' AS access;
+
+        ELSE SELECT 'usuario no tiene access' AS access;
+        
+        END IF;
+END
+
+
+CALL validate('2','4','tme')
+-- ?==================================================validate===================================
+-- !==================================================refusation===================================
+
+
+
+DROP PROCEDURE IF EXISTS refusation;
+CREATE PROCEDURE refusation(IN idUser VARCHAR(100),IN idDemande VARCHAR(100),IN userRole VARCHAR(20))
+BEGIN
+    DECLARE pretandetRole VARCHAR(20);
+
+    SELECT role INTO pretandetRole FROM user
+    WHERE id_user = idUser;
+
+    IF pretandetRole = userRole
+
+        THEN 
+            IF pretandetRole = 'tme'
+                THEN UPDATE demande SET etap = 'refuse'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('refuse',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'capt'
+                THEN UPDATE demande SET etap = 'refuse'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('refuse',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'd_tech'
+                THEN UPDATE demande SET etap = 'refuse_m'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('refuse_m',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'exploi'
+                THEN UPDATE demande SET etap = 'refuse_m'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('refuse_m',idUser,idDemande);
+
+            ELSEIF pretandetRole = 'terr'
+                THEN UPDATE demande SET etap = 'refuse_m'
+                WHERE id_demande = idDemande;
+
+                INSERT INTO process(type_process,id_user,id_demande)
+                VALUES ('refuse_m',idUser,idDemande);
+            END IF;
+        
+        SELECT 'valido' AS access;
+
+        ELSE SELECT 'usuario no tiene access' AS access;
+        
+        END IF;
+END
+
+CALL refusation('2','5','tme')

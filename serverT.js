@@ -5,6 +5,8 @@ let todo = require('./moduls/todo')
 let demande = require('./moduls/demande')
 let refused = require('./moduls/refused')
 let done = require('./moduls/done')
+let validate = require('./moduls/validate')
+const refusation = require('./refusation')
 let serrver = http.createServer((req,res) => {
     if(req.url === '/login') {
        userIn = Login(req,res)
@@ -45,6 +47,24 @@ let serrver = http.createServer((req,res) => {
     }
     else if (req.url === '/Done') {
         userIn = done(req,res)
+       console.log(userIn)
+       res.writeHead(200,{
+        'Content-Type':'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Methods': 'POST, GET, DELETE, PUT, OPTION '
+       })
+    }
+    else if (req.url === '/validate') {
+        userIn = validate(req,res)
+       console.log(userIn)
+       res.writeHead(200,{
+        'Content-Type':'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Methods': 'POST, GET, DELETE, PUT, OPTION '
+       })
+    }
+    else if (req.url === '/refusation') {
+        userIn = refusation(req,res)
        console.log(userIn)
        res.writeHead(200,{
         'Content-Type':'application/json',
