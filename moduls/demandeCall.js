@@ -2,9 +2,10 @@ let mysql = require('mysql2')
 
 function demandeCall(reqBody,res){
     dbConnection = mysql.createConnection({
-        user:'newuser',
+        user:'root',
         password:'password',
-        host:'localhost',
+        host:'backend-mysql-1',
+        port:'3306',
         database:'convoiLourd'
     })
     dbConnection.query(`CALL demande(${reqBody.id_demande},${reqBody.id_user})`,(err,dbRes,dields) => {
