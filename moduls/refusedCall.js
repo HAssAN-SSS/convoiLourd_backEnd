@@ -2,9 +2,10 @@ let mysql = require('mysql2')
 
 function refusedCall(reqBody,res){
     dbConnection = mysql.createConnection({
-        user:'newuser',
+        user:'root',
         password:'password',
-        host:'localhost',
+        host:'127.0.0.1',
+        port:'3306',
         database:'convoiLourd'
     })
     dbConnection.query(`CALL refused("${reqBody.id_user}")`,(err,dbRes,dields) => {

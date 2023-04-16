@@ -72,6 +72,15 @@ let serrver = http.createServer((req,res) => {
         'Access-Control-Allow-Methods': 'POST, GET, DELETE, PUT, OPTION '
        })
     }
+    else if (req.url === '/Demandes' || req.url === '/Accepted' || req.url === '/Refused_' ) {
+        userIn = todo(req,res)
+    //    console.log(userIn)
+       res.writeHead(200,{
+        'Content-Type':'application/json',
+        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Methods': 'POST, GET, DELETE, PUT, OPTION '
+       })
+    }
 })
 
 serrver.listen(3001,() => {
